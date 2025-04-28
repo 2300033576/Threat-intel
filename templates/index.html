@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield - Advanced Threat Intelligence Platform</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0e17; color: #c5d1eb; font-family: 'JetBrains Mono', monospace; line-height: 1.6;">
+    <!-- Header Navigation -->
+    <header style="background-color: rgba(17, 25, 39, 0.8); backdrop-filter: blur(10px); position: fixed; width: 100%; z-index: 1000; border-bottom: 1px solid #1e2a3a;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 70px;">
+            <div style="display: flex; align-items: center;">
+                <h1 style="margin: 0; font-size: 1.5rem; color: #4ade80; display: flex; align-items: center;">
+                    <i class="fas fa-shield-alt" style="margin-right: 10px;"></i>CyberShield™
+                </h1>
+            </div>
+            <nav>
+                <ul style="list-style: none; display: flex; gap: 30px; margin: 0; padding: 0;">
+                    <li><a href="#" style="color: #4ade80; text-decoration: none; font-weight: 500;">Home</a></li>
+                    <li><a href="/dashboard" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">CVE Dashboard</a></li>
+                    <li><a href="/feeds" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Latest Threats</a></li>
+                    <li><a href="/threat_analysis" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Threat Analysis</a></li>
+                </ul>
+            </nav>
+            <div>
+                <a href="/dashboard" style="background-color: #172234; color: #4ade80; border: 1px solid #4ade80; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s ease;">
+                    Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section style="background: linear-gradient(to bottom, #0f172a, #0a0e17); padding: 160px 20px 100px; position: relative; overflow: hidden;">
+        <!-- Animated background elements -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; opacity: 0.3;">
+            <div id="matrix-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+        </div>
+        
+        <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 40px;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h1 style="font-size: 3rem; margin: 0 0 20px; line-height: 1.2; background: linear-gradient(to right, #4ade80, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                        Advanced Threat Intelligence Platform
+                    </h1>
+                    <p style="font-size: 1.1rem; margin-bottom: 30px; color: #94a3b8; max-width: 600px;">
+                        Stay ahead of cyber threats with real-time intelligence, advanced analytics, and comprehensive protection for your organization's digital assets.
+                    </p>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <a href="/dashboard" style="background-color: #4ade80; color: #0f172a; border: none; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;">
+                            <i class="fas fa-shield-alt" style="margin-right: 8px;"></i> Get Started
+                        </a>
+                        <a href="/index" style="background-color: transparent; color: #e2e8f0; border: 1px solid #334155; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;">
+                            <i class="fas fa-play" style="margin-right: 8px;"></i> Watch Demo
+                        </a>
+                    </div>
+                    <div style="margin-top: 40px; display: flex; align-items: center; gap: 20px;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #1e293b; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                <i class="fas fa-check" style="color: #4ade80;"></i>
+                            </div>
+                            <span style="color: #94a3b8; font-size: 0.9rem;">SOC 2 Compliant</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #1e293b; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                <i class="fas fa-lock" style="color: #4ade80;"></i>
+                            </div>
+                            <span style="color: #94a3b8; font-size: 0.9rem;">End-to-End Encryption</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 300px; position: relative;">
+                    <div style="position: relative; background-color: #111927; border-radius: 8px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden; height: 400px; border: 1px solid #1e2a3a;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 40px; background-color: #172234; display: flex; align-items: center; padding: 0 15px;">
+                            <div style="width: 12px; height: 12px; background-color: #ef4444; border-radius: 50%; margin-right: 8px;"></div>
+                            <div style="width: 12px; height: 12px; background-color: #f59e0b; border-radius: 50%; margin-right: 8px;"></div>
+                            <div style="width: 12px; height: 12px; background-color: #4ade80; border-radius: 50%;"></div>
+                            <div style="margin-left: 15px; font-size: 0.8rem; color: #94a3b8;">CyberShield™ Terminal</div>
+                        </div>
+                        <div style="padding: 50px 20px 20px; height: calc(100% - 70px); overflow: hidden; position: relative;">
+                            <div id="terminal-text" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #4ade80; white-space: pre-line; line-height: 1.5;">
+                                > Initializing CyberShield™ Threat Intelligence Platform...
+                                > Loading threat database...
+                                > Connecting to global threat feeds...
+                                > Analyzing network traffic patterns...
+                                > Detecting potential vulnerabilities...
+                                > Monitoring for suspicious activities...
+                                > Threat intelligence dashboard ready.
+                                > Welcome to CyberShield™ v2.4.1
+                                > By Pavan vootla 
+                                > _
+                            </div>
+                        </div>
+                    </div>
+                    <div style="position: absolute; bottom: -20px; right: -20px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0) 70%); border-radius: 50%; z-index: -1;"></div>
+                    <div style="position: absolute; top: -30px; left: -30px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(56, 189, 248, 0) 70%); border-radius: 50%; z-index: -1;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Threat Intelligence Section -->
+    <section id="about" style="padding: 100px 20px; background-color: #0a0e17;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 20px; color: #e2e8f0;">What is Threat Intelligence?</h2>
+                <p style="max-width: 700px; margin: 0 auto; color: #94a3b8; font-size: 1.1rem;">
+                    Threat intelligence is the analysis of data to understand cybersecurity threats targeting your organization.
+                </p>
+            </div>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+                <div style="flex: 1; min-width: 300px; max-width: 380px; background-color: #111927; border-radius: 8px; padding: 30px; border: 1px solid #1e2a3a; transition: transform 0.3s ease;">
+                    <div style="width: 60px; height: 60px; border-radius: 12px; background-color: rgba(74, 222, 128, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-radar" style="font-size: 1.8rem; color: #4ade80;"></i>
+                    </div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px; color: #e2e8f0;">Proactive Detection</h3>
+                    <p style="color: #94a3b8; margin-bottom: 0;">
+                        Identify threats before they impact your organization by analyzing patterns, behaviors, and indicators of compromise from global sources.
+                    </p>
+                </div>
+                
+                <div style="flex: 1; min-width: 300px; max-width: 380px; background-color: #111927; border-radius: 8px; padding: 30px; border: 1px solid #1e2a3a; transition: transform 0.3s ease;">
+                    <div style="width: 60px; height: 60px; border-radius: 12px; background-color: rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-chart-network" style="font-size: 1.8rem; color: #38bdf8;"></i>
+                    </div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px; color: #e2e8f0;">Contextual Analysis</h3>
+                    <p style="color: #94a3b8; margin-bottom: 0;">
+                        Understand the who, what, why, and how behind cyber threats with detailed context that helps prioritize your security response.
+                    </p>
+                </div>
+                
+                <div style="flex: 1; min-width: 300px; max-width: 380px; background-color: #111927; border-radius: 8px; padding: 30px; border: 1px solid #1e2a3a; transition: transform 0.3s ease;">
+                    <div style="width: 60px; height: 60px; border-radius: 12px; background-color: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                        <i class="fas fa-shield-virus" style="font-size: 1.8rem; color: #a855f7;"></i>
+                    </div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px; color: #e2e8f0;">Strategic Defense</h3>
+                    <p style="color: #94a3b8; margin-bottom: 0;">
+                        Transform raw threat data into actionable intelligence that strengthens your security posture and informs strategic decisions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" style="padding: 100px 20px; background-color: #0f172a;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 2.2rem; margin-bottom: 20px; color: #e2e8f0;">Key Platform Features</h2>
+                <p style="max-width: 700px; margin: 0 auto; color: #94a3b8; font-size: 1.1rem;">
+                    CyberShield™ provides comprehensive threat intelligence capabilities to protect your organization.
+                </p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(74, 222, 128, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-globe" style="color: #4ade80;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">Global Threat Feeds</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Access real-time data from over 100+ global threat intelligence sources and feeds.
+                    </p>
+                </div>
+                
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(56, 189, 248, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-chart-line" style="color: #38bdf8;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">Advanced Analytics</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Leverage AI and machine learning to identify patterns and predict potential threats.
+                    </p>
+                </div>
+                
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(168, 85, 247, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-bell" style="color: #a855f7;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">Real-time Alerts</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Receive instant notifications about emerging threats relevant to your infrastructure.
+                    </p>
+                </div>
+                
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-virus-slash" style="color: #ef4444;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">Malware Analysis</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Automatically analyze suspicious files and URLs in a secure sandbox environment.
+                    </p>
+                </div>
+                
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-network-wired" style="color: #f59e0b;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">API Integration</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Seamlessly integrate with your existing security tools and SIEM systems.
+                    </p>
+                </div>
+                
+                <div style="background-color: #111927; border-radius: 8px; padding: 25px; border: 1px solid #1e2a3a; transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <div style="width: 40px; height: 40px; border-radius: 8px; background-color: rgba(14, 165, 233, 0.1); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            <i class="fas fa-file-alt" style="color: #0ea5e9;"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; margin: 0; color: #e2e8f0;">Comprehensive Reports</h3>
+                    </div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+                        Generate detailed threat reports for stakeholders and compliance requirements.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section style="padding: 80px 20px; background-color: #0a0e17;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 30px; text-align: center;">
+                <div>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px; background: linear-gradient(to right, #4ade80, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">10M+</div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 1rem;">Threats Detected</p>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px; background: linear-gradient(to right, #4ade80, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">500+</div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 1rem;">Enterprise Clients</p>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px; background: linear-gradient(to right, #4ade80, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">99.9%</div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 1rem;">Uptime Guarantee</p>
+                </div>
+                <div>
+                    <div style="font-size: 3rem; font-weight: bold; margin-bottom: 10px; background: linear-gradient(to right, #4ade80, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">24/7</div>
+                    <p style="color: #94a3b8; margin: 0; font-size: 1rem;">Expert Support</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section style="padding: 100px 20px; background: linear-gradient(to bottom, #0f172a, #0a0e17);">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.2rem; margin-bottom: 20px; color: #e2e8f0;">Ready to Strengthen Your Security Posture?</h2>
+            <p style="color: #94a3b8; margin-bottom: 30px; font-size: 1.1rem;">
+                Join hundreds of organizations that trust CyberShield™ for their threat intelligence needs.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="/signup" style="background-color: #4ade80; color: #0f172a; border: none; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;">
+                    <i class="fas fa-shield-alt" style="margin-right: 8px;"></i> Start Free Trial
+                </a>
+                <a href="/contact" style="background-color: transparent; color: #e2e8f0; border: 1px solid #334155; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; transition: all 0.2s ease;">
+                    <i class="fas fa-headset" style="margin-right: 8px;"></i> Contact Sales
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background-color: #111927; padding: 60px 20px 30px; border-top: 1px solid #1e2a3a;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 50px;">
+                <div style="flex: 2; min-width: 200px;">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 20px; color: #4ade80; display: flex; align-items: center;">
+                        <i class="fas fa-shield-alt" style="margin-right: 10px;"></i>CyberShield™
+                    </h3>
+                    <p style="color: #94a3b8; margin-bottom: 20px; max-width: 400px;">
+                        Advanced threat intelligence platform providing real-time protection against evolving cyber threats.
+                    </p>
+                    <div style="display: flex; gap: 15px;">
+                        <a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">
+                            <i class="fab fa-twitter" style="font-size: 1.2rem;"></i>
+                        </a>
+                        <a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">
+                            <i class="fab fa-linkedin" style="font-size: 1.2rem;"></i>
+                        </a>
+                        <a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">
+                            <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <h4 style="font-size: 1rem; margin-bottom: 20px; color: #e2e8f0;">Product</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Features</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Pricing</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">API</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <h4 style="font-size: 1rem; margin-bottom: 20px; color: #e2e8f0;">Resources</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Documentation</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Blog</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Webinars</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Case Studies</a></li>
+                    </ul>
+                </div>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <h4 style="font-size: 1rem; margin-bottom: 20px; color: #e2e8f0;">Company</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">About Us</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Careers</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Contact</a></li>
+                        <li style="margin-bottom: 10px;"><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s ease;">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; padding-top: 30px; border-top: 1px solid #1e2a3a;">
+                <div style="margin-bottom: 20px; color: #64748b; font-size: 0.9rem;">
+                    Created by <a href="https://github.com/0xpavan" style="color: #4ade80; text-decoration: none; font-weight: 500;">Pavan Vootla (0xpavan)</a>
+                </div>
+                <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
+                    &copy; 2023 CyberShield™. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Matrix background effect script -->
+    <script>
+        // Matrix background effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const matrixBg = document.getElementById('matrix-bg');
+            
+            matrixBg.appendChild(canvas);
+            
+            canvas.width = matrixBg.offsetWidth;
+            canvas.height = matrixBg.offsetHeight;
+            
+            const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+            const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const nums = '0123456789';
+            const symbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+            
+            const alphabet = katakana + latin + nums + symbols;
+            
+            const fontSize = 16;
+            const columns = canvas.width / fontSize;
+            
+            const rainDrops = [];
+            
+            for (let x = 0; x < columns; x++) {
+                rainDrops[x] = 1;
+            }
+            
+            const draw = () => {
+                context.fillStyle = 'rgba(10, 14, 23, 0.05)';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                
+                context.fillStyle = '#4ade80';
+                context.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < rainDrops.length; i++) {
+                    const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                    context.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                    
+                    if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        rainDrops[i] = 0;
+                    }
+                    rainDrops[i]++;
+                }
+            };
+            
+            setInterval(draw, 30);
+            
+            // Terminal typing effect
+            const terminalText = document.getElementById('terminal-text');
+            const text = terminalText.textContent;
+            terminalText.textContent = '';
+            
+            let i = 0;
+            const typeWriter = () => {
+                if (i < text.length) {
+                    terminalText.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, Math.random() * 50 + 20);
+                }
+            };
+            
+            setTimeout(typeWriter, 500);
+        });
+        
+        // Add hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseover', () => {
+                    if (link.style.color !== '#4ade80') {
+                        link.style.color = '#e2e8f0';
+                    }
+                });
+                link.addEventListener('mouseout', () => {
+                    if (link.style.color !== '#4ade80') {
+                        link.style.color = '#94a3b8';
+                    }
+                });
+            });
+            
+            const footerLinks = document.querySelectorAll('footer a');
+            footerLinks.forEach(link => {
+                if (!link.classList.contains('special')) {
+                    link.addEventListener('mouseover', () => {
+                        link.style.color = '#e2e8f0';
+                    });
+                    link.addEventListener('mouseout', () => {
+                        link.style.color = '#94a3b8';
+                    });
+                }
+            });
+            
+            const featureCards = document.querySelectorAll('#features > div > div > div');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseover', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.3)';
+                    card.style.borderColor = '#334155';
+                });
+                card.addEventListener('mouseout', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = 'none';
+                    card.style.borderColor = '#1e2a3a';
+                });
+            });
+            
+            const ctaButtons = document.querySelectorAll('a[href="/signup"], a[href="/contact"]');
+            ctaButtons.forEach(button => {
+                button.addEventListener('mouseover', () => {
+                    if (button.style.backgroundColor === 'transparent') {
+                        button.style.backgroundColor = '#1e293b';
+                        button.style.borderColor = '#4ade80';
+                        button.style.color = '#4ade80';
+                    } else {
+                        button.style.backgroundColor = '#3bba6c';
+                    }
+                });
+                button.addEventListener('mouseout', () => {
+                    if (button.style.backgroundColor === '#1e293b') {
+                        button.style.backgroundColor = 'transparent';
+                        button.style.borderColor = '#334155';
+                        button.style.color = '#e2e8f0';
+                    } else {
+                        button.style.backgroundColor = '#4ade80';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

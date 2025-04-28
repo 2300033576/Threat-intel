@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield - Threat Intelligence Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0e17;
+            color: #c5d1eb;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #111927;
+            border-right: 1px solid #1e2a3a;
+            padding: 20px 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            color: #4ade80;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header .subtitle {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 2px;
+        }
+        
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #94a3b8;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #172234;
+            color: #e2e8f0;
+            border-left-color: #64748b;
+        }
+        
+        .nav-menu a.active {
+            color: #4ade80;
+            background-color: #172234;
+            border-left: 3px solid #4ade80;
+        }
+        
+        .nav-menu i {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
+        }
+        
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #1e2a3a;
+            margin-top: auto;
+        }
+        
+        .profile-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px 30px;
+            max-width: calc(100% - var(--sidebar-width));
+            box-sizing: border-box;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e2a3a;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            color: #e2e8f0;
+        }
+        
+        .metrics-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .metric-card {
+            background-color: #111927;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .fetch-btn {
+            background-color: #4ade80;
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .fetch-btn:hover {
+            background-color: #3bc971;
+        }
+        
+        .fetch-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Table Styles */
+        .threat-table {
+            background-color: #111927;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .table-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #e2e8f0;
+        }
+        
+        .table-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 15px 8px 35px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            width: 200px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .table-controls select {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            max-width: 100%;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.875rem;
+            min-width: 800px;
+        }
+        
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #172234;
+            color: #94a3b8;
+            font-weight: normal;
+            border-top: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+        }
+        
+        th:first-child {
+            border-top-left-radius: 6px;
+        }
+        
+        th:last-child {
+            border-top-right-radius: 6px;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #1e293b;
+        }
+        
+        tr:nth-child(odd) {
+            background-color: #0f172a;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #111927;
+        }
+        
+        tr:hover {
+            background-color: #172234;
+        }
+        
+        .threat-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .badge-malware {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .badge-phishing {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .badge-ransomware {
+            background-color: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+        
+        .badge-c2 {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .confidence-bar {
+            width: 80px;
+            height: 6px;
+            background-color: #1e293b;
+            border-radius: 3px;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+        }
+        
+        .fill-high {
+            background-color: #ef4444;
+        }
+        
+        .fill-medium {
+            background-color: #f59e0b;
+        }
+        
+        .fill-low {
+            background-color: #3b82f6;
+        }
+        
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pagination button {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: nowrap;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: center;
+        }
+        
+        .footer .update-time {
+            color: #4ade80;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .sidebar-header h2,
+            .sidebar .subtitle,
+            .sidebar .nav-text,
+            .sidebar .user-profile .profile-text {
+                display: none;
+            }
+            
+            .sidebar .nav-menu a {
+                justify-content: center;
+                padding: 12px 0;
+            }
+            
+            .sidebar .nav-menu i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .metric-card {
+                min-width: 100%;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/index" style="text-decoration: none; color: inherit;">
+                    <h2>
+                      <i class="fas fa-shield-alt"></i>
+                      <span class="nav-text">CyberShield™</span>
+                    </h2>
+                  </a>
+                  
+                <div class="subtitle">Threat Intelligence Platform</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="/dashboard"><i class="fas fa-bug"></i><span class="nav-text">CVE Dashboard</span></a></li>
+                <li><a href="/feeds" class="active"><i class="fas fa-rss"></i><span class="nav-text">Threat Feeds</span></a></li>  
+                <li><a href="/threat_analysis"><i class="fas fa-microscope"></i><span class="nav-text">Threat Analysis</span></a></li>
+         <!--       <li><a href="/alerts"><i class="fas fa-bell"></i><span class="nav-text">Alerts</span></a></li>
+                <li><a href="/reports"><i class="fas fa-file-alt"></i><span class="nav-text">Reports</span></a></li>
+            -->
+            </ul>
+            
+          
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <header class="page-header">
+                <h1>Threat Intelligence Feed</h1>
+                <div style="display: flex; align-items: center;">
+                    <a href="/fetch" class="fetch-btn"><i class="fas fa-sync-alt"></i>Fetch Latest Threats</a>
+                </div>
+            </header>
+
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <div class="metric-label">Active Threats</div>
+                    <div class="metric-value" style="color: #ef4444;">{{ threats|length }}</div>
+                    <div style="font-size: 0.75rem; color: #ef4444; display: flex; align-items: center;">
+                        <i class="fas fa-arrow-up" style="margin-right: 5px;"></i>+12% from yesterday
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Mitigated</div>
+                    <div class="metric-value" style="color: #4ade80;">{{ mitigated_count|default('0') }}</div>
+                    <div style="font-size: 0.75rem; color: #4ade80; display: flex; align-items: center;">
+                        <i class="fas fa-arrow-up" style="margin-right: 5px;"></i>+5% from yesterday
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Threat Score</div>
+                    <div class="metric-value" style="color: #f59e0b;">76/100</div>
+                    <div style="font-size: 0.75rem; color: #f59e0b; display: flex; align-items: center;">
+                        <i class="fas fa-arrow-down" style="margin-right: 5px;"></i>-3% from yesterday
+                    </div>
+                </div>
+            </div>
+
+            <div class="threat-table">
+                <div class="table-header">
+                    <h2>Latest Threat Indicators </h2>
+                    <div class="table-controls">
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>IOC</th>
+                                <th>Threat Type</th>
+                                <th>Malware Family</th>
+                                <th>Confidence</th>
+                                <th>First Seen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for threat in threats %}
+                            <tr>
+                                <td style="font-family: 'JetBrains Mono', monospace;">{{ threat.ioc }}</td>
+                                <td>
+                                    <span class="threat-badge 
+                                        {% if threat.threat_type == 'Malware' %}badge-malware
+                                        {% elif threat.threat_type == 'Phishing' %}badge-phishing
+                                        {% elif threat.threat_type == 'Ransomware' %}badge-ransomware
+                                        {% else %}badge-c2
+                                        {% endif %}">
+                                        {{ threat.threat_type }}
+                                    </span>
+                                </td>
+                                <td>{{ threat.malware_family }}</td>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill 
+                                                {% if threat.confidence_level > 80 %}fill-high
+                                                {% elif threat.confidence_level > 50 %}fill-medium
+                                                {% else %}fill-low
+                                                {% endif %}" 
+                                                style="width: {{ threat.confidence_level }}%;">
+                                            </div>
+                                        </div>
+                                        <span>{{ threat.confidence_level }}%</span>
+                                    </div>
+                                </td>
+                                <td style="color: #64748b;">{{ threat.first_seen }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-footer">
+                    <div>Showing {{ threats|length }} of {{ total_threats|default('0') }} threats</div>
+                    <div class="pagination">
+                        <button>Previous</button>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div>CyberShield™ Threat Intelligence Platform v2.4.1</div>
+                <div>Last updated: <span class="update-time">{{ current_time }}</span></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Update the last updated time
+        document.querySelector('.update-time').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>

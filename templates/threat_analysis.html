@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield - Threat Analysis</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --transition-speed: 0.3s;
+            --bg-dark: #0a0e17;
+            --bg-darker: #111927;
+            --bg-highlight: #172234;
+            --text-primary: #c5d1eb;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --accent-green: #4ade80;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-darker);
+            border-right: 1px solid #1e2a3a;
+            padding: 20px 0;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            transition: all var(--transition-speed) ease;
+            z-index: 1000;
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 5px;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 15px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 2px;
+        }
+        
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-menu a:hover {
+            background-color: var(--bg-highlight);
+            color: var(--text-primary);
+            border-left-color: var(--text-tertiary);
+        }
+        
+        .nav-menu a.active {
+            color: var(--accent-green);
+            background-color: var(--bg-highlight);
+            border-left: 3px solid var(--accent-green);
+        }
+        
+        .nav-menu i {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
+        }
+        
+        .user-profile {
+            padding: 20px;
+            border-top: 1px solid #1e2a3a;
+            margin-top: auto;
+        }
+        
+        .profile-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            transition: all var(--transition-speed) ease;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e2a3a;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+        
+        /* Analysis Form */
+        .analysis-form {
+            background-color: var(--bg-darker);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .search-btn {
+            background-color: var(--accent-green);
+            color: #0f172a;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s ease;
+        }
+        
+        .search-btn:hover {
+            background-color: #3bc971;
+        }
+        
+        .search-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Results Section */
+        .results-container {
+            background-color: var(--bg-darker);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-header i {
+            margin-right: 10px;
+            color: var(--accent-green);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .data-card {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .data-item {
+            margin-bottom: 10px;
+        }
+        
+        .data-label {
+            font-weight: bold;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        
+        .data-value {
+            word-break: break-word;
+        }
+        
+        .analysis-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 15px;
+            min-width: 150px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .malicious {
+            color: var(--accent-red);
+        }
+        
+        .harmless {
+            color: var(--accent-green);
+        }
+        
+        .suspicious {
+            color: var(--accent-yellow);
+        }
+        
+        .undetected {
+            color: var(--text-tertiary);
+        }
+        
+        .whois-data {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .categories-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .category-tag {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        
+        .error-message {
+            color: var(--accent-red);
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            
+            .sidebar-header h2,
+            .sidebar-header .subtitle,
+            .nav-text {
+                display: none;
+            }
+            
+            .nav-menu a {
+                justify-content: center;
+                padding: 12px 0;
+            }
+            
+            .nav-menu i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+                padding: 20px;
+            }
+            
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/index" style="text-decoration: none; color: inherit;">
+                    <h2>
+                      <i class="fas fa-shield-alt"></i>
+                      <span class="nav-text">CyberShield™</span>
+                    </h2>
+                  </a>
+                  
+                <div class="subtitle">Threat Intelligence Platform</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="/dashboard"><i class="fas fa-bug"></i><span class="nav-text">CVE Dashboard</span></a></li>
+                <li><a href="/feeds"><i class="fas fa-rss"></i><span class="nav-text">Threat Feeds</span></a></li>
+                <li><a href="/threat_analysis" class="active"><i class="fas fa-microscope"></i><span class="nav-text">Threat Analysis</span></a></li>
+              <!--   <li><a href="/alerts"><i class="fas fa-bell"></i><span class="nav-text">Alerts</span></a></li>
+                <li><a href="/reports"><i class="fas fa-file-alt"></i><span class="nav-text">Reports</span></a></li>
+            -->    </ul>
+            
+    
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <header class="page-header">
+                <h1>Threat Analysis</h1>
+            </header>
+        
+            <!-- IOC Search Form -->
+            <form class="analysis-form" action="/threat_analysis" method="POST">
+                <div class="form-group">
+                    <label for="ioc">Enter IOC (MD5, SHA1, SHA256, IP, domain, URL):</label>
+                    <input type="text" id="ioc" name="ioc" required placeholder="e.g., 185.159.82.15 or amazon.in">
+                </div>
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i>Search</button>
+            </form>
+        
+            {% if virustotal_data %}
+            <div class="results-container">
+                <h2 class="section-header"><i class="fas fa-virus"></i>Analysis Results</h2>
+        
+                <div class="data-grid">
+                    <div class="data-card">
+                        <div class="data-item">
+                            <div class="data-label">ID</div>
+                            <div class="data-value">{{ virustotal_data.id or 'No value found' }}</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Type</div>
+                            <div class="data-value">{{ virustotal_data.type or 'No value found' }}</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Registrar</div>
+                            <div class="data-value">{{ virustotal_data.registrar or 'No value found' }}</div>
+                        </div>
+                    </div>
+        
+                    <div class="data-card">
+                        <div class="data-item">
+                            <div class="data-label">Creation Date</div>
+                            <div class="data-value">
+                                {% if virustotal_data.creation_date %}
+                                    {{ virustotal_data.creation_date|datetimeformat }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Expiration Date</div>
+                            <div class="data-value">
+                                {% if virustotal_data.expiration_date %}
+                                    {{ virustotal_data.expiration_date|datetimeformat }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Reputation</div>
+                            <div class="data-value">
+                                {% if virustotal_data.reputation is not none %}
+                                    {% if virustotal_data.reputation < 0 %}
+                                        <span class="malicious">{{ virustotal_data.reputation }} (Malicious)</span>
+                                    {% elif virustotal_data.reputation < 50 %}
+                                        <span class="suspicious">{{ virustotal_data.reputation }} (Suspicious)</span>
+                                    {% else %}
+                                        <span class="harmless">{{ virustotal_data.reputation }} (Clean)</span>
+                                    {% endif %}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <h3 class="section-header"><i class="fas fa-chart-bar"></i>Analysis Stats</h3>
+                <div class="analysis-stats">
+                    <div class="stat-card">
+                        <div class="stat-value harmless">{{ virustotal_data.last_analysis_stats.harmless or 'No value found' }}</div>
+                        <div class="stat-label">Harmless</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value malicious">{{ virustotal_data.last_analysis_stats.malicious or 'No value found' }}</div>
+                        <div class="stat-label">Malicious</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value suspicious">{{ virustotal_data.last_analysis_stats.suspicious or 'No value found' }}</div>
+                        <div class="stat-label">Suspicious</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value undetected">{{ virustotal_data.last_analysis_stats.undetected or 'No value found' }}</div>
+                        <div class="stat-label">Undetected</div>
+                    </div>
+                </div>
+        
+                <h3 class="section-header"><i class="fas fa-lock"></i>SSL Certificate</h3>
+                <div class="data-grid">
+                    <div class="data-card">
+                        <div class="data-item">
+                            <div class="data-label">Issuer</div>
+                            <div class="data-value">
+                                {% if virustotal_data.last_https_certificate and virustotal_data.last_https_certificate.issuer %}
+                                    {{ virustotal_data.last_https_certificate.issuer.CN or 'No value found' }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Valid From</div>
+                            <div class="data-value">
+                                {% if virustotal_data.last_https_certificate and virustotal_data.last_https_certificate.validity %}
+                                    {{ virustotal_data.last_https_certificate.validity.not_before or 'No value found' }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-item">
+                            <div class="data-label">Valid To</div>
+                            <div class="data-value">
+                                {% if virustotal_data.last_https_certificate and virustotal_data.last_https_certificate.validity %}
+                                    {{ virustotal_data.last_https_certificate.validity.not_after or 'No value found' }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Signature Algorithm</div>
+                            <div class="data-value">
+                                {% if virustotal_data.last_https_certificate and virustotal_data.last_https_certificate.cert_signature %}
+                                    {{ virustotal_data.last_https_certificate.cert_signature.signature_algorithm or 'No value found' }}
+                                {% else %}
+                                    No value found
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <h3 class="section-header"><i class="fas fa-tags"></i>Categories</h3>
+                <div class="categories-container">
+                    {% if virustotal_data.categories %}
+                        {% for vendor, category in virustotal_data.categories.items() %}
+                            <div class="category-tag">{{ vendor }}: {{ category }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="category-tag">No categories found</div>
+                    {% endif %}
+                </div>
+        
+                <h3 class="section-header"><i class="fas fa-info-circle"></i>WHOIS Information</h3>
+                <div class="whois-data">
+                    {{ virustotal_data.whois or 'No value found' }}
+                </div>
+        
+            </div>
+        
+            {% elif error %}
+            <div class="error-message">{{ error }}</div>
+        
+            {% else %}
+          
+            {% endif %}
+        </main>
+        

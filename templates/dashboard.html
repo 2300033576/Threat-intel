@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShield - CVE Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --transition-speed: 0.3s;
+            --bg-dark: #0a0e17;
+            --bg-darker: #111927;
+            --bg-highlight: #172234;
+            --text-primary: #c5d1eb;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --accent-green: #4ade80;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #a855f7;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-darker);
+            border-right: 1px solid #1e2a3a;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-header h2 {
+            margin: 0;
+            color: var(--accent-green);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 5px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 2px;
+        }
+        
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-menu a:hover {
+            background-color: var(--bg-highlight);
+            color: var(--text-primary);
+            border-left-color: var(--text-tertiary);
+        }
+        
+        .nav-menu a.active {
+            color: var(--accent-green);
+            background-color: var(--bg-highlight);
+            border-left: 3px solid var(--accent-green);
+        }
+        
+        .nav-menu i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e2a3a;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+        
+        /* CVE Cards Grid */
+        .cve-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .cve-card {
+            background-color: var(--bg-darker);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #1e2a3a;
+        }
+        
+        .cve-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-blue);
+        }
+        
+        .cve-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .cve-card-id {
+            font-weight: bold;
+            color: var(--accent-blue);
+            font-size: 1rem;
+        }
+        
+        .cve-card-state {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            background-color: rgba(74, 222, 128, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .cve-card-title {
+            font-size: 0.9rem;
+            margin: 10px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+        
+        .severity-critical { 
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+        
+        .severity-high { 
+            background-color: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+        
+        .severity-medium { 
+            background-color: rgba(245, 158, 11, 0.2);
+            color: var(--accent-yellow);
+        }
+        
+        .severity-low { 
+            background-color: rgba(74, 222, 128, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .severity-unknown { 
+            background-color: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            background-color: var(--bg-darker);
+            color: var(--text-primary);
+            border: 1px solid #1e2a3a;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #1e2a3a;
+        }
+        
+        .modal-title {
+            color: var(--accent-blue);
+        }
+        
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: var(--text-primary);
+        }
+        
+        .cve-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+        
+        .meta-value {
+            word-break: break-word;
+        }
+        
+        .cve-description {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .cvss-metrics {
+            margin: 15px 0;
+        }
+        
+        .cvss-item {
+            background-color: #0f172a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .cvss-version {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .cvss-vector {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+        
+        .references-list {
+            margin-top: 15px;
+        }
+        
+        .reference-item {
+            margin-bottom: 8px;
+        }
+        
+        .reference-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        
+        .reference-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed-width);
+            }
+            
+            .sidebar-header h2,
+            .sidebar-header .subtitle,
+            .nav-text {
+                display: none;
+            }
+            
+            .nav-menu a {
+                justify-content: center;
+                padding: 12px 0;
+            }
+            
+            .nav-menu i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed-width);
+                padding: 20px;
+            }
+            
+            .cve-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="/index" style="text-decoration: none; color: inherit;">
+                    <h2>
+                      <i class="fas fa-shield-alt"></i>
+                      <span class="nav-text">CyberShield™</span>
+                    </h2>
+                  </a>
+                  
+                <div class="subtitle">CVE Intelligence Platform</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="/dashboard" class="active"><i class="fas fa-bug"></i><span class="nav-text">CVE Dashboard</span></a></li>
+                <li><a href="/feeds"><i class="fas fa-rss"></i><span class="nav-text">Threat Feeds</span></a></li>  
+                <li><a href="/threat_analysis"><i class="fas fa-microscope"></i><span class="nav-text">Threat Analysis</span></a></li>
+             <!--  <li><a href="/alerts"><i class="fas fa-bell"></i><span class="nav-text">Alerts</span></a></li>
+                <li><a href="/reports"><i class="fas fa-file-alt"></i><span class="nav-text">Reports</span></a></li>
+           -->
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1><i class="fas fa-bug"></i> CVE Dashboard</h1>
+            </header>
+
+            <!-- CVE Cards Grid -->
+            <div class="cve-grid">
+                {% for cve in cves %}
+                <div class="cve-card" data-bs-toggle="modal" data-bs-target="#cveModal{{ loop.index }}">
+                    <div class="cve-card-header">
+                        <span class="cve-card-id">
+                            {% if cve.get('dataType') == 'CVE_RECORD' %}
+                                {{ cve.get('cveMetadata', {}).get('cveId', 'N/A') }}
+                            {% elif 'GHSA-' in cve.get('id', '') %}
+                                {{ cve.get('aliases', ['N/A'])[0] }}
+                            {% endif %}
+                        </span>
+                        <span class="cve-card-state">
+                            {% if cve.get('dataType') == 'CVE_RECORD' %}
+                                {{ cve.get('cveMetadata', {}).get('state', 'N/A') }}
+                            {% elif 'GHSA-' in cve.get('id', '') %}
+                                GHSA
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="cve-card-title">
+                        {% if cve.get('dataType') == 'CVE_RECORD' %}
+                            {{ cve.get('containers', {}).get('cna', {}).get('title', 'No title available') }}
+                        {% elif 'GHSA-' in cve.get('id', '') %}
+                            {{ cve.get('summary', 'No summary available') }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Severity Badge -->
+                    {% if cve.get('dataType') == 'CVE_RECORD' %}
+                        {% for metric in cve.get('containers', {}).get('cna', {}).get('metrics', []) %}
+                            {% if 'cvssV3_1' in metric %}
+                                <span class="severity-badge severity-{{ metric['cvssV3_1'].get('baseSeverity', '').lower() }}">
+                                    {{ metric['cvssV3_1'].get('baseSeverity', 'UNKNOWN') }}
+                                </span>
+                            {% elif 'cvssV3_0' in metric %}
+                                <span class="severity-badge severity-{{ metric['cvssV3_0'].get('baseSeverity', '').lower() }}">
+                                    {{ metric['cvssV3_0'].get('baseSeverity', 'UNKNOWN') }}
+                                </span>
+                            {% elif 'cvssV4_0' in metric %}
+                                <span class="severity-badge severity-{{ metric['cvssV4_0'].get('baseSeverity', '').lower() }}">
+                                    {{ metric['cvssV4_0'].get('baseSeverity', 'UNKNOWN') }}
+                                </span>
+                            {% endif %}
+                        {% endfor %}
+                    {% elif 'GHSA-' in cve.get('id', '') %}
+                        {% for severity in cve.get('severity', []) %}
+                            {% set score = severity.get('score', '') %}
+                            {% if 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L' in score %}
+                                <span class="severity-badge severity-critical">CRITICAL</span>
+                            {% elif 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N' in score %}
+                                <span class="severity-badge severity-medium">MEDIUM</span>
+                            {% else %}
+                                <span class="severity-badge severity-unknown">UNKNOWN</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="severity-badge severity-{{ cve.get('database_specific', {}).get('severity', 'unknown').lower() }}">
+                                {{ cve.get('database_specific', {}).get('severity', 'UNKNOWN') }}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Modal for each CVE -->
+                <div class="modal fade" id="cveModal{{ loop.index }}" tabindex="-1" aria-labelledby="cveModalLabel{{ loop.index }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cveModalLabel{{ loop.index }}">
+                                    {% if cve.get('dataType') == 'CVE_RECORD' %}
+                                        {{ cve.get('cveMetadata', {}).get('cveId', 'N/A') }}
+                                    {% elif 'GHSA-' in cve.get('id', '') %}
+                                        {{ cve.get('aliases', ['N/A'])[0] }} ({{ cve.get('id', 'N/A') }})
+                                    {% endif %}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if cve.get('dataType') == 'CVE_RECORD' %}
+                                    <div class="cve-meta">
+                                        <div class="meta-item">
+                                            <span class="meta-label">State</span>
+                                            <span class="meta-value">{{ cve.get('cveMetadata', {}).get('state', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Assigner</span>
+                                            <span class="meta-value">{{ cve.get('cveMetadata', {}).get('assignerShortName', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Date Reserved</span>
+                                            <span class="meta-value">{{ cve.get('cveMetadata', {}).get('dateReserved', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Date Published</span>
+                                            <span class="meta-value">{{ cve.get('cveMetadata', {}).get('datePublished', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Date Updated</span>
+                                            <span class="meta-value">{{ cve.get('cveMetadata', {}).get('dateUpdated', 'N/A') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4>Title</h4>
+                                    <p>{{ cve.get('containers', {}).get('cna', {}).get('title', 'N/A') }}</p>
+                                    
+                                    <h4>Description</h4>
+                                    <div class="cve-description">
+                                        {{ cve.get('containers', {}).get('cna', {}).get('descriptions', [{}])[0].get('value', 'N/A') }}
+                                    </div>
+
+                                    <h4>Severity Assessment</h4>
+                                    <div class="cvss-metrics">
+                                        {% for metric in cve.get('containers', {}).get('cna', {}).get('metrics', []) %}
+                                            <div class="cvss-item">
+                                                {% if 'cvssV3_1' in metric %}
+                                                    <div class="cvss-version">
+                                                        <strong>CVSS {{ metric['cvssV3_1'].get('version', '3.1') }}:</strong>
+                                                        <span class="severity-badge severity-{{ metric['cvssV3_1'].get('baseSeverity', '').lower() }}">
+                                                            {{ metric['cvssV3_1'].get('baseSeverity', 'N/A') }} (Score: {{ metric['cvssV3_1'].get('baseScore', 'N/A') }})
+                                                        </span>
+                                                    </div>
+                                                    <div class="cvss-vector">Vector: {{ metric['cvssV3_1'].get('vectorString', 'N/A') }}</div>
+                                                {% elif 'cvssV3_0' in metric %}
+                                                    <div class="cvss-version">
+                                                        <strong>CVSS {{ metric['cvssV3_0'].get('version', '3.0') }}:</strong>
+                                                        <span class="severity-badge severity-{{ metric['cvssV3_0'].get('baseSeverity', '').lower() }}">
+                                                            {{ metric['cvssV3_0'].get('baseSeverity', 'N/A') }} (Score: {{ metric['cvssV3_0'].get('baseScore', 'N/A') }})
+                                                        </span>
+                                                    </div>
+                                                    <div class="cvss-vector">Vector: {{ metric['cvssV3_0'].get('vectorString', 'N/A') }}</div>
+                                                {% elif 'cvssV2_0' in metric %}
+                                                    <div class="cvss-version">
+                                                        <strong>CVSS {{ metric['cvssV2_0'].get('version', '2.0') }}:</strong>
+                                                        Score: {{ metric['cvssV2_0'].get('baseScore', 'N/A') }}
+                                                    </div>
+                                                    <div class="cvss-vector">Vector: {{ metric['cvssV2_0'].get('vectorString', 'N/A') }}</div>
+                                                {% elif 'cvssV4_0' in metric %}
+                                                    <div class="cvss-version">
+                                                        <strong>CVSS {{ metric['cvssV4_0'].get('version', '4.0') }}:</strong>
+                                                        <span class="severity-badge severity-{{ metric['cvssV4_0'].get('baseSeverity', '').lower() }}">
+                                                            {{ metric['cvssV4_0'].get('baseSeverity', 'N/A') }} (Score: {{ metric['cvssV4_0'].get('baseScore', 'N/A') }})
+                                                        </span>
+                                                    </div>
+                                                    <div class="cvss-vector">Vector: {{ metric['cvssV4_0'].get('vectorString', 'N/A') }}</div>
+                                                {% else %}
+                                                    <div>No valid CVSS data found</div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <div class="cvss-item">No severity metrics available</div>
+                                        {% endfor %}
+                                    </div>
+
+                                {% elif 'GHSA-' in cve.get('id', '') %}
+                                    <div class="cve-meta">
+                                        <div class="meta-item">
+                                            <span class="meta-label">GHSA ID</span>
+                                            <span class="meta-value">{{ cve.get('id', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Modified</span>
+                                            <span class="meta-value">{{ cve.get('modified', 'N/A') }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Published</span>
+                                            <span class="meta-value">{{ cve.get('published', 'N/A') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4>Details</h4>
+                                    <div class="cve-description">
+                                        {{ cve.get('details', 'N/A') }}
+                                    </div>
+
+                                    <h4>Severity Assessment</h4>
+                                    <div class="cvss-metrics">
+                                        {% for severity in cve.get('severity', []) %}
+                                            <div class="cvss-item">
+                                                <div class="cvss-version">
+                                                    <strong>{{ severity.get('type', 'N/A') }}:</strong>
+                                                    {% set score = severity.get('score', '') %}
+                                                    {% if 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:L' in score %}
+                                                        <span class="severity-badge severity-critical">CRITICAL</span>
+                                                    {% elif 'CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N' in score %}
+                                                        <span class="severity-badge severity-medium">MEDIUM</span>
+                                                    {% else %}
+                                                        <span class="severity-badge severity-unknown">UNKNOWN</span>
+                                                    {% endif %}
+                                                    ({{ score }})
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="cvss-item">
+                                                <div class="cvss-version">
+                                                    <strong>Database Specific:</strong>
+                                                    <span class="severity-badge severity-{{ cve.get('database_specific', {}).get('severity', 'unknown').lower() }}">
+                                                        {{ cve.get('database_specific', {}).get('severity', 'N/A') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    <h4>References</h4>
+                                    <div class="references-list">
+                                        {% for reference in cve.get('references', []) %}
+                                        <div class="reference-item">
+                                            <a href="{{ reference.get('url', '#') }}" class="reference-link" target="_blank">
+                                                {{ reference.get('type', 'Reference') }}: {{ reference.get('url', 'N/A') }}
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
