@@ -8,7 +8,7 @@ app = Flask(__name__)
 # MongoDB Connection String (MongoDB Atlas)
 client = MongoClient("mongodb+srv://admin:admin@threat-intel.mcmzs2n.mongodb.net/?retryWrites=true&w=majority&appName=Threat-intel")
 db = client["threat_intel_db"]
-collection = db["threats"]
+collection = db["threats"]  
 
 # Home redirects to index
 @app.route('/')
